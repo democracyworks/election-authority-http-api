@@ -1,0 +1,39 @@
+api:
+  build: .
+  links:
+    - rabbitmq
+    - wildfly
+  environment:
+    ALLOWED_ORIGINS: :all
+election-authority-works:
+  build: ../election-authority-works
+  links:
+    - rabbitmq
+    - wildfly
+    - datomic
+  environment:
+    ELECTION_AUTHORITY_WORKS_DATOMIC_URI: "datomic:dev://datomic:4334/election-authority-works"
+wildfly:
+  image: quay.io/democracyworks/wildfly:8.2.1.Final-debug
+  links:
+    - rabbitmq
+    - datomic
+  ports:
+    - "59990:9990"
+    - "58080:8080"
+  environment:
+    ADMIN_USERNAME: admin
+    ADMIN_PASSWORD: admin
+rabbitmq:
+  image: rabbitmq:3.5.3-management
+  ports:
+    - "45672:5672"
+    - "55672:15672"
+  hostname: rabbitmq
+datomic:
+  image: quay.io/democracyworks/datomic-tx:0.9.5327
+  hostname: datomic
+  ports:
+    - "4334:4334"
+    - "4335:4335"
+    - "4336:4336"
