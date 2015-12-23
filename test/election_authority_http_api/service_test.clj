@@ -6,7 +6,7 @@
             [clojure.core.async :as async]
             [clojure.test :refer :all]))
 
-(def test-server-port 56000) ; FIXME: Pick a port unique to this project
+(def test-server-port 56845)
 
 (defn start-test-server [run-tests]
   (server/start-http-server {:io.pedestal.http/port test-server-port})
