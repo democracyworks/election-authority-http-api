@@ -6,6 +6,9 @@
 
 (defonce election-authority-search (async/chan))
 
+(defonce election-authority-create (async/chan))
+
 (defn close-all! []
-  (doseq [c [ok-requests ok-responses election-authority-search]]
+  (doseq [c [ok-requests ok-responses election-authority-search
+             election-authority-create]]
     (async/close! c)))

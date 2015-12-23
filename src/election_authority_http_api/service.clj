@@ -37,14 +37,24 @@
         (assoc-in ctx [:response :status] 404)
         ctx))}))
 
+(def drop-authority-key
+  (interceptor
+   {:leave
+    (fn [ctx]
+      (if-let [authority (get-in ctx [:response :body :authority])]
+        (assoc-in ctx [:response :body] authority)
+        ctx))}))
+
 (defroutes routes
-  [[["/"
+  [[["/" {:post [:create-authority (bifrost/interceptor
+                                    channels/election-authority-create)]}
      ^:interceptors [(body-params)
                      (negotiate-response-content-type ["application/edn"
                                                        "application/transit+json"
                                                        "application/transit+msgpack"
                                                        "application/json"
-                                                       "text/plain"])]
+                                                       "text/plain"])
+                     drop-authority-key]
      ["/ping" {:get [:ping ping]}]
 
      ["/search"

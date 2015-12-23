@@ -25,7 +25,14 @@
                               "election-authority-works.search"
                               (config [:rabbitmq :queues "election-authority-works.search"])
                               5000
-                              channels/election-authority-search)]
+                              channels/election-authority-search)
+                             (wire-up/external-service
+                              connection
+                              ""
+                              "election-authority-works.create"
+                              (config [:rabbitmq :queues "election-authority-works.create"])
+                              5000
+                              channels/election-authority-create)]
           outgoing-events []]
 
       (wire-up/start-responder! channels/ok-requests
