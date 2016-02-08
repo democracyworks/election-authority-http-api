@@ -4,7 +4,7 @@ api:
     - rabbitmq
     - wildfly
   environment:
-    ALLOWED_ORIGINS: :all
+    ALLOWED_ORIGINS: '[".*"]'
 election-authority-works:
   build: ../election-authority-works
   links:
