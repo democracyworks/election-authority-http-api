@@ -24,7 +24,7 @@
                               ""
                               "election-authority-works.search"
                               (config [:rabbitmq :queues "election-authority-works.search"])
-                              5000
+                              10000
                               channels/election-authority-search)]
           outgoing-events []]
 
