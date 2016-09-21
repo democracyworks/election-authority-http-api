@@ -20,7 +20,8 @@ fleetctl destroy ${SERVICE}@.service
 fleetctl submit ${SERVICE}@.service
 
 echo '--- (re-)starting fleet service instances'
-for i in {1..3}; do
+NODE_COUNT=$(curl -s http://${DEPLOY_ENV}.democracy.works:8500/v1/catalog/nodes | jq length)
+for i in $(seq 1 ${NODE_COUNT}); do
   fleetctl destroy ${SERVICE}@$i
   fleetctl start ${SERVICE}@$i
   # TODO: Use consul to see if ${SERVICE}@$i is healthy yet before moving on
