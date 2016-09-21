@@ -2,6 +2,10 @@
 
 set -e
 
+if [[ -n $1 ]]; then
+  DEPLOY_ENV=$1
+fi
+
 if [[ -z $SERVICE ]]; then
   SERVICE=${PWD##*/}
 fi
@@ -26,3 +30,17 @@ for i in $(seq 1 ${NODE_COUNT}); do
   fleetctl start ${SERVICE}@$i
   # TODO: Use consul to see if ${SERVICE}@$i is healthy yet before moving on
 done
+
+if [[ -n ${DEPLOY_ENV} ]]; then
+  DOCKER_REPO=$(grep "Environment=DOCKER_REPO=" ${SERVICE}@.service | cut -f 3 -d =)
+  IMAGE_TAG=$(grep "Environment=VERSION=" ${SERVICE}@.service | cut -f 3 -d =)
+  DOCKER_IMAGE="${DOCKER_REPO}:${IMAGE_TAG}"
+  echo "--- tagging and pushing ${DOCKER_REPO}:${DEPLOY_ENV}"
+  docker pull ${DOCKER_IMAGE} # in case it isn't on this host yet
+  docker tag -f ${DOCKER_IMAGE} ${DOCKER_REPO}:${DEPLOY_ENV}
+  docker push ${DOCKER_REPO}:${DEPLOY_ENV}
+  if [[ "${DEPLOY_ENV}" = "production" ]]; then
+    docker tag -f ${DOCKER_IMAGE} ${DOCKER_REPO}:latest
+    docker push ${DOCKER_REPO}:latest
+  fi
+fi
